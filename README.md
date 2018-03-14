@@ -9,27 +9,27 @@ Just paste this in a terminal (sudo permissions required!)
 
 # Usage
 Extract a backup:
-	ibake extract <Backup-ID> <Extraction-Path>
-	ibake extract <Backup-ID> <Extraction-Path> -d <domain>
-	ibake extract <Backup-ID> <Extraction-Path> -d <domain> -f <file>
-	ibake extract <Backup-ID> <Extraction-Path> -h <hash>
+  ibake extract <Backup-ID> <Extraction-Path>
+  ibake extract <Backup-ID> <Extraction-Path> -d <domain>
+  ibake extract <Backup-ID> <Extraction-Path> -d <domain> -f <file>
+  ibake extract <Backup-ID> <Extraction-Path> -h <hash>
 
 List all backups:
-	ibake list
+  ibake list
 
 Print information about a backup:
-	ibake info <Backup-ID>
+  ibake info <Backup-ID>
 
 Read backup:
-	ibake read <Backup-ID> domains
-	ibake read <Backup-ID> files
-	ibake read <Backup-ID> files -d <domain>
+  ibake read <Backup-ID> domains
+  ibake read <Backup-ID> files
+  ibake read <Backup-ID> files -d <domain>
 
 Upload file to backup:
-	ibake upload <Backup-ID> <Local-file> <Domain-name> <Backup-path>
+  ibake upload <Backup-ID> <Local-file> <Domain-name> <Backup-path>
 
 Generate file name hash:
-	ibake hash <Domain-name> <Relative-path>
+  ibake hash <Domain-name> <Relative-path>
   
 # Examples
 
