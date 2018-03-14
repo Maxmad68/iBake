@@ -50,6 +50,7 @@ Generate file name hash:<br>
 Retrieve SMS database:
 
     ibake extract <Backup-ID> ~/sms.db -d HomeDomain -f Library/SMS/sms.db
+    
    
 Retrieve all camera roll:
 
