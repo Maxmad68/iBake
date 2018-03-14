@@ -10,35 +10,35 @@ Just paste this in a terminal (sudo permissions required!)
 # Usage
 
 Extract a backup:</br>
-  ibake extract <Backup-ID> <Extraction-Path><br>
-  ibake extract <Backup-ID> <Extraction-Path> -d <domain><br>
-  ibake extract <Backup-ID> <Extraction-Path> -d <domain> -f <file><br>
-  ibake extract <Backup-ID> <Extraction-Path> -h <hash><br>
+  ibake extract &lt;Backup-ID&gt; &lt;Extraction-Path&gt;<br>
+  ibake extract &lt;Backup-ID&gt; &lt;Extraction-Path> -d &lt;domain&gt;<br>
+  ibake extract &lt;Backup-ID&gt; &lt;Extraction-Path> -d &lt;domain&gt; -f &lt;file&gt;<br>
+  ibake extract &lt;Backup-ID&gt; &lt;Extraction-Path> -h &lt;hash&gt;<br>
 <br>
 List all backups:<br>
   ibake list<br>
 <br>
 Print information about a backup:<br>
-  ibake info <Backup-ID><br>
+  ibake info &lt;Backup-ID&gt;<br>
 <br>
 Read backup:<br>
-  ibake read <Backup-ID> domains<br>
-  ibake read <Backup-ID> files<br>
-  ibake read <Backup-ID> files -d <domain><br>
+  ibake read &lt;Backup-ID&gt; domains<br>
+  ibake read &lt;Backup-ID&gt; files<br>
+  ibake read &lt;Backup-ID&gt; files -d <domain><br>
 <br>
 Upload file to backup:<br>
-  ibake upload <Backup-ID> <Local-file> <Domain-name> <Backup-path><br>
+  ibake upload &lt;Backup-ID&gt; &lt;Local-file&gt; &lt;Domain-name&gt; &lt;Backup-path><br>
 <br>
 Generate file name hash:<br>
-  ibake hash <Domain-name> <Relative-path><br>
+  ibake hash &lt;Domain-name&gt; &lt;Relative-path&gt;<br>
 <br>
-</code>
+
 # Examples
 
 Retrieve SMS database:
 
-   ibake extract <Backup-ID> ~/sms.db -d HomeDomain -f Library/SMS/sms.db
+   ibake extract &lt;Backup-ID&gt; ~/sms.db -d HomeDomain -f Library/SMS/sms.db
    
 Retrieve all camera roll:
 
-   ibake extract <Backup-ID> Camera-roll -d CameraRollDomain
+   ibake extract &lt;Backup-ID&gt; Camera-roll -d CameraRollDomain
