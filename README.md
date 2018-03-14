@@ -8,6 +8,7 @@ Just paste this in a terminal (sudo permissions required!)
 
 
 # Usage
+<code>
 Extract a backup:
   ibake extract <Backup-ID> <Extraction-Path>
   ibake extract <Backup-ID> <Extraction-Path> -d <domain>
@@ -30,7 +31,8 @@ Upload file to backup:
 
 Generate file name hash:
   ibake hash <Domain-name> <Relative-path>
-  
+
+</code>
 # Examples
 
 Retrieve SMS database:
