@@ -10,11 +10,11 @@ Just paste this in a terminal (sudo permissions required!)
 # Usage
 
 Extract a backup:</br>
-  ibake extract <Backup-ID> <Extraction-Path>  </br>
-  ibake extract <Backup-ID> <Extraction-Path> -d <domain>  </br>
-  ibake extract <Backup-ID> <Extraction-Path> -d <domain> -f <file>  </br>
-  ibake extract <Backup-ID> <Extraction-Path> -h <hash>  </br>
-</br>
+  ibake extract <Backup-ID> <Extraction-Path><br>
+  ibake extract <Backup-ID> <Extraction-Path> -d <domain><br>
+  ibake extract <Backup-ID> <Extraction-Path> -d <domain> -f <file><br>
+  ibake extract <Backup-ID> <Extraction-Path> -h <hash><br>
+<br>
 List all backups:<br>
   ibake list<br>
 <br>
