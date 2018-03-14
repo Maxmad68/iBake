@@ -11,37 +11,37 @@ Just paste this in a terminal (sudo permissions required!)
 
 Extract a backup:</br>
 
-    ibake extract &lt;Backup-ID&gt; &lt;Extraction-Path&gt;<br>
-    ibake extract &lt;Backup-ID&gt; &lt;Extraction-Path> -d &lt;domain&gt;<br>
-    ibake extract &lt;Backup-ID&gt; &lt;Extraction-Path> -d &lt;domain&gt; -f &lt;file&gt;<br>
-    ibake extract &lt;Backup-ID&gt; &lt;Extraction-Path> -h &lt;hash&gt;<br>
+    ibake extract <Backup-ID> <Extraction-Path>
+	ibake extract <Backup-ID> <Extraction-Path> -d <domain>
+	ibake extract <Backup-ID> <Extraction-Path> -d <domain> -f <file>
+	ibake extract <Backup-ID> <Extraction-Path> -h <hash>
    
 <br>
 List all backups:<br>
 
-    ibake list<br>
+    ibake list
     
 <br>
 Print information about a backup:<br>
 
-    ibake info &lt;Backup-ID&gt;<br>
+    ibake info <Backup-ID>
     
 <br>
 Read backup:<br>
 
-    ibake read &lt;Backup-ID&gt; domains<br>
-    ibake read &lt;Backup-ID&gt; files<br>
-    ibake read &lt;Backup-ID&gt; files -d <domain><br>
+    ibake read <Backup-ID> domains
+	ibake read <Backup-ID> files
+	ibake read <Backup-ID> files -d <domain>
     
 <br>
 Upload file to backup:<br>
 
-    ibake upload &lt;Backup-ID&gt; &lt;Local-file&gt; &lt;Domain-name&gt; &lt;Backup-path><br>
+    ibake upload <Backup-ID> <Local-file> <Domain-name> <Backup-path>
 
 <br>
 Generate file name hash:<br>
 
-    ibake hash &lt;Domain-name&gt; &lt;Relative-path&gt;<br>
+    ibake hash <Domain-name> <Relative-path>
     
 <br>
 
