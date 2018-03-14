@@ -47,11 +47,11 @@ Generate file name hash:<br>
 
 # Examples
 
-Retrieve SMS database:
+Retrieve SMS database:<br>
 
     ibake extract <Backup-ID> ~/sms.db -d HomeDomain -f Library/SMS/sms.db
     
-   
+<br>   
 Retrieve all camera roll:
 
     ibake extract <Backup-ID> Camera-roll -d CameraRollDomain
