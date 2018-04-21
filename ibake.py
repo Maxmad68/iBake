@@ -14,34 +14,36 @@ argv = sys.argv
 #  Copyright 2018 Maxime MADRAU
 
 __author__ = 'Maxime Madrau (maxime@madrau.com)'
+__version__ = '1.3'
 
 
 
 
 def usage():
 	print
-	print 'iBake, by Maxime Madrau'
+	print 'iBake {version}, by Maxime Madrau'.format(version=__version__)
 	print 'Usage:'
 	print
 	print 'Extract a backup:'
-	print '	ibake extract <Backup-ID> <Extraction-Path>'
-	print '	ibake extract <Backup-ID> <Extraction-Path> -d <domain>'
-	print '	ibake extract <Backup-ID> <Extraction-Path> -d <domain> -f <file>'
-	print '	ibake extract <Backup-ID> <Extraction-Path> -h <hash>'
+	print '	ibake extract <Backup-ID or Path> <Extraction-Path>'
+	print '	ibake extract <Backup-ID or Path> <Extraction-Path> -d <domain>'
+	print '	ibake extract <Backup-ID or Path> <Extraction-Path> -d <domain> -f <file>'
+	print '	ibake extract <Backup-ID or Path> <Extraction-Path> -h <hash>'
 	print
 	print 'List all backups:'
 	print '	ibake list'
+	print '	ibake list <Directory>'
 	print
 	print 'Print information about a backup:'
-	print '	ibake info <Backup-ID>'
+	print '	ibake info <Backup-ID or Path>'
 	print
 	print 'Read backup:'
-	print '	ibake read <Backup-ID> domains'
-	print '	ibake read <Backup-ID> files'
-	print '	ibake read <Backup-ID> files -d <domain>'
+	print '	ibake read <Backup-ID or Path> domains'
+	print '	ibake read <Backup-ID or Path> files'
+	print '	ibake read <Backup-ID or Path> files -d <domain>'
 	print
 	print 'Upload file to backup:'
-	print '	ibake upload <Backup-ID> <Local-file> <Domain-name> <Backup-path>'
+	print '	ibake upload <Backup-ID or Path> <Local-file> <Domain-name> <Backup-path>'
 	print
 	print 'Generate file name hash:'
 	print '	ibake hash <Domain-name> <Relative-path>'
@@ -67,8 +69,11 @@ if whattodo == 'extract':
 		exit()
 		
 	user = os.environ['HOME']
-
-	path = os.path.join(user,'Library/Application Support/MobileSync/Backup/',backupId)
+	
+	if os.path.isdir(backupId):
+		path = backupId
+	else:
+		path = os.path.join(user,'Library/Application Support/MobileSync/Backup/',backupId)
 	dbPath = os.path.join(path,'Manifest.db')
 	#print dbPath
 	conn = sqlite3.connect(dbPath)
@@ -177,7 +182,10 @@ if whattodo == 'extract':
 	
 elif whattodo == 'list':
 	user = os.environ['HOME']
-	backupDir = os.path.join(user,'Library/Application Support/MobileSync/Backup/')
+	if len(sys.argv) >= 3:
+		backupDir = sys.argv[2]
+	else:
+		backupDir = os.path.join(user,'Library/Application Support/MobileSync/Backup/')
 	print 'All backups:'
 	for backupId in os.listdir(backupDir):
 		if backupId[0] != '.':
@@ -192,12 +200,16 @@ elif whattodo == 'list':
 				print '%s: %s - iOS %s , on %s'%(backupId,deviceName,osVersion,date)
 	
 elif whattodo == 'info':
+	print
 	try:
 		backupId = argv[2]
 	except:
 		usage()
 	user = os.environ['HOME']
-	backupDir = os.path.join(user,'Library/Application Support/MobileSync/Backup/',backupId)
+	if os.path.isdir(backupId):
+		backupDir = backupId
+	else:
+		backupDir = os.path.join(user,'Library/Application Support/MobileSync/Backup/',backupId)
 	plist = plistlib.readPlist(os.path.join(backupDir,'Info.plist'))
 	print 'Backup ID: '+backupId
 	print 'Last Backup Date: '+str(plist['Last Backup Date'])
@@ -222,7 +234,10 @@ elif whattodo == 'read':
 		usage()
 		
 	user = os.environ['HOME']
-	path = os.path.join(user,'Library/Application Support/MobileSync/Backup/',backupId)
+	if os.path.isdir(backupId):
+		path = backupId
+	else:
+		path = os.path.join(user,'Library/Application Support/MobileSync/Backup/',backupId)
 	dbPath = os.path.join(path,'Manifest.db')
 	conn = sqlite3.connect(dbPath)
 	c = conn.cursor()
@@ -253,7 +268,10 @@ elif whattodo == 'upload':
 	except:
 		usage()		
 	user = os.environ['HOME']
-	path = os.path.join(user,'Library/Application Support/MobileSync/Backup/',backupId)
+	if os.path.isdir(backupId):
+		path = backupId
+	else:
+		path = os.path.join(user,'Library/Application Support/MobileSync/Backup/',backupId)
 	dbPath = os.path.join(path,'Manifest.db')
 	conn = sqlite3.connect(dbPath)
 	c = conn.cursor()
