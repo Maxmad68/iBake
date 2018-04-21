@@ -20,6 +20,7 @@ Extract a backup:</br>
 List all backups:<br>
 
     ibake list
+    ibake list <Directory>
     
 <br>
 Print information about a backup:<br>
@@ -45,6 +46,7 @@ Generate file name hash:<br>
     
 <br>
 
+Note that all Backup-ID may be a path.
 # Examples
 
 Retrieve SMS database:<br>
