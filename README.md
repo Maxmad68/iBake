@@ -1,5 +1,5 @@
 # iBake
-iBake (<b>i</b>OS <b>BA</b>c<b>K</b>up Extractor) is an iOS backup extractor and utility.
+iBake (<b>i</b>OS <b>BA</b>c<b>K</b>up <b>E</b>xtractor) is an iOS backup extractor and utility.
 
 # Installation
 Just paste this in a terminal (sudo permissions required!)
