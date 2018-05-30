@@ -14,9 +14,24 @@ argv = sys.argv
 #  Copyright 2018 Maxime MADRAU
 
 __author__ = 'Maxime Madrau (maxime@madrau.com)'
-__version__ = '1.3'
+__version__ = '1.4'
 
+def readBinaryPlist(path):
+	plist = {}
 
+	content = os.popen('defaults read \'{realpath}\''.format(realpath=os.path.realpath(path))).read()
+	keys = re.findall(r'(?<=    ).+(?= = )',content)
+
+	for k in keys:
+		valRaw = re.findall(r'(?<={k} = ).+(?=;)'.format(k=k),content)[0]
+		try:
+			val = eval(valRaw)
+		except:
+			val = valRaw
+		plist[k] = val
+		
+	return plist
+		
 
 
 def usage():
@@ -47,6 +62,9 @@ def usage():
 	print
 	print 'Generate file name hash:'
 	print '	ibake hash <Domain-name> <Relative-path>'
+	print
+	print 'Execute shell in backups directory:'
+	print '	ibake shell <Shell>'
 
 	exit()
 
@@ -65,7 +83,7 @@ if whattodo == 'extract':
 	
 		
 	if os.path.isdir(reformDir):
-		print 'Extraction Directory must not exist! (Will be created by BKE)'
+		print 'Extraction Directory must not exist! (Will be created by iBake)'
 		exit()
 		
 	user = os.environ['HOME']
@@ -189,12 +207,18 @@ elif whattodo == 'list':
 	print 'All backups:'
 	for backupId in os.listdir(backupDir):
 		if backupId[0] != '.':
+			
+			if 'Snapshot' in os.listdir(os.path.join(backupDir,backupId)):
+				print '%s: Backuping'%backupId
+				continue 
+			
 			try:
 				plist = plistlib.readPlist(os.path.join(backupDir,backupId,'Info.plist'))
 				deviceName = plist['Device Name']
 				osVersion = plist['Product Version']
 				date = plist['Last Backup Date']
 			except:
+				
 				print '%s: Unreadable backup'%backupId
 			else:
 				print '%s: %s - iOS %s , on %s'%(backupId,deviceName,osVersion,date)
@@ -210,21 +234,34 @@ elif whattodo == 'info':
 		backupDir = backupId
 	else:
 		backupDir = os.path.join(user,'Library/Application Support/MobileSync/Backup/',backupId)
-	plist = plistlib.readPlist(os.path.join(backupDir,'Info.plist'))
-	print 'Backup ID: '+backupId
-	print 'Last Backup Date: '+str(plist['Last Backup Date'])
-	print 'Device Name: '+plist['Device Name']
-	print 'Device Type: %s (%s)'%(plist['Product Name'],plist['Product Type'])
-	print 'Serial Number: '+plist['Serial Number']
-	print 'GUID: '+plist['GUID']
-	print 'ICCID: '+plist['ICCID']
-	print 'IMEI: '+plist['IMEI']
-	print 'UUID: '+plist['Unique Identifier']
-	print 'Target Identifier: '+plist['Target Identifier']
-	print 'iOS Version: %s (%s)' %(plist['Product Version'],plist['Build Version'])
-	print 'iTunes Version: '+plist['iTunes Version']
-	print 'Installed Applications: (%i)'%len(plist['Installed Applications'])
-	print ''.join(map(lambda s: '\n   - '+s,plist['Installed Applications']))
+	
+	backuping = os.path.isdir(os.path.join(backupDir,'Snapshot'))
+	
+	if not backuping:
+		plist = plistlib.readPlist(os.path.join(backupDir,'Info.plist'))
+		print 'Backup ID: '+backupId
+		print 'Last Backup Date: '+str(plist['Last Backup Date'])
+		print 'Device Name: '+plist['Device Name']
+		print 'Device Type: %s (%s)'%(plist['Product Name'],plist['Product Type'])
+		print 'Serial Number: '+plist['Serial Number']
+		print 'GUID: '+plist['GUID']
+		print 'ICCID: '+plist['ICCID']
+		print 'IMEI: '+plist['IMEI']
+		print 'UUID: '+plist['Unique Identifier']
+		print 'Target Identifier: '+plist['Target Identifier']
+		print 'iOS Version: %s (%s)' %(plist['Product Version'],plist['Build Version'])
+		print 'iTunes Version: '+plist['iTunes Version']
+		print 'Installed Applications: (%i)'%len(plist['Installed Applications'])
+		print ''.join(map(lambda s: '\n   - '+s,plist['Installed Applications']))
+	
+	else:
+		plistPath = os.path.join(backupDir,'Status.plist')
+		plist = readBinaryPlist(plistPath)
+		print 'Backup ID: '+backupId
+		print 'UUID: '+plist['UUID']
+		print 'Date: '+re.findall(r'.+(?= \+)',plist['Date'])[0]
+		print 'Backup State: '+plist['BackupState']
+		print 'Snapshot State: '+plist['SnapshotState']
 
 elif whattodo == 'read':
 	try:
@@ -321,6 +358,13 @@ elif whattodo == 'hash':
 	backupPath = '%s-%s'%(domain,file_)
 	id_ = hashlib.sha1(backupPath).hexdigest()
 	print id_
+	
+elif whattodo == 'shell':
+	command = ' '.join(argv[2:])
+	pwd = os.environ['PWD']
+	os.chdir('Library/Application Support/MobileSync/Backup/')
+	os.system(command)
+	os.chdir(pwd)
 		
 else:
 	usage()
