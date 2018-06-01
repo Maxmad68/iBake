@@ -4,7 +4,7 @@ iBake (<b>i</b>OS <b>BA</b>c<b>K</b>up <b>E</b>xtractor) is an iOS backup extrac
 # Installation
 Just paste this in a terminal (sudo permissions required!)
 
-    sudo curl https://raw.githubusercontent.com/Maxmad68/ibake/master/ibake.py > /usr/local/bin/ibake && sudo chmod +x /usr/local/bin/ibake
+    sudo wget https://raw.githubusercontent.com/Maxmad68/ibake/master/ibake.py -O /usr/local/bin/ibake && sudo chmod +x /usr/local/bin/ibake
 
 
 # Usage
