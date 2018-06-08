@@ -50,7 +50,7 @@ def usage():
 	print '	ibake list <Directory>'
 	print
 	print 'Print information about a backup:'
-	print '	ibake info <Backup-ID or Path>'
+	print '	ibake info <Backup-ID or Path> [-a]'
 	print
 	print 'Read backup:'
 	print '	ibake read <Backup-ID or Path> domains'
