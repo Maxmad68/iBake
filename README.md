@@ -26,6 +26,7 @@ List all backups:<br>
 Print information about a backup:<br>
 
     ibake info <Backup-ID>
+    ibake info <Backup-ID> -a    (Show apps list)
     
 <br>
 Read backup:<br>
@@ -38,6 +39,13 @@ Read backup:<br>
 Upload file to backup:<br>
 
     ibake upload <Backup-ID> <Local-file> <Domain-name> <Backup-path>
+    
+<br>
+Downgrade backup:<br>
+This command allows you to make a backup compatible with a device on an older version. (For exemple, an iOS 12 backup could be restored on an iOS 11 device)
+Note that using this command is very risky and not recommended. The iOS-Version parameter and the iOS-Build-Number must correspond.
+
+    ibake downgrade <Backup-ID> <iOS-Version> <iOS-Build-Number>
 
 <br>
 Generate file name hash:<br>
