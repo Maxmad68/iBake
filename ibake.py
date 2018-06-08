@@ -241,21 +241,24 @@ elif whattodo == 'info':
 	backuping = os.path.isdir(os.path.join(backupDir,'Snapshot'))
 	
 	if not backuping:
+		showApps = '-a' in argv
 		plist = plistlib.readPlist(os.path.join(backupDir,'Info.plist'))
-		print 'Backup ID: '+backupId
-		print 'Last Backup Date: '+str(plist['Last Backup Date'])
-		print 'Device Name: '+plist['Device Name']
-		print 'Device Type: %s (%s)'%(plist['Product Name'],plist['Product Type'])
-		print 'Serial Number: '+plist['Serial Number']
-		print 'GUID: '+plist['GUID']
-		print 'ICCID: '+plist['ICCID']
-		print 'IMEI: '+plist['IMEI']
-		print 'UUID: '+plist['Unique Identifier']
-		print 'Target Identifier: '+plist['Target Identifier']
-		print 'iOS Version: %s (%s)' %(plist['Product Version'],plist['Build Version'])
-		print 'iTunes Version: '+plist['iTunes Version']
-		print 'Installed Applications: (%i)'%len(plist['Installed Applications'])
-		print ''.join(map(lambda s: '\n   - '+s,plist['Installed Applications']))
+		if not showApps:
+			print 'Backup ID: '+backupId
+			print 'Last Backup Date: '+str(plist['Last Backup Date'])
+			print 'Device Name: '+plist['Device Name']
+			print 'Device Type: %s (%s)'%(plist['Product Name'],plist['Product Type'])
+			print 'Serial Number: '+plist['Serial Number']
+			print 'GUID: '+plist['GUID']
+			print 'ICCID: '+plist['ICCID']
+			print 'IMEI: '+plist['IMEI']
+			print 'UUID: '+plist['Unique Identifier']
+			print 'Target Identifier: '+plist['Target Identifier']
+			print 'iOS Version: %s (%s)' %(plist['Product Version'],plist['Build Version'])
+			print 'iTunes Version: '+plist['iTunes Version']
+		else:
+			print 'Installed Applications: (%i)'%len(plist['Installed Applications'])
+			print ''.join(map(lambda s: '\n   - '+s,plist['Installed Applications']))
 	
 	else:
 		plistPath = os.path.join(backupDir,'Status.plist')
@@ -418,3 +421,6 @@ elif whattodo == 'shell':
 		
 else:
 	usage()
+	
+	
+	
