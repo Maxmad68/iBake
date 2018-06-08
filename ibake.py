@@ -14,7 +14,7 @@ argv = sys.argv
 #  Copyright 2018 Maxime MADRAU
 
 __author__ = 'Maxime Madrau (maxime@madrau.com)'
-__version__ = '1.4'
+__version__ = '1.5'
 
 def readBinaryPlist(path):
 	plist = {}
