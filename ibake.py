@@ -60,6 +60,9 @@ def usage():
 	print 'Upload file to backup:'
 	print '	ibake upload <Backup-ID or Path> <Local-file> <Domain-name> <Backup-path>'
 	print
+	print 'Downgrade backup:'
+	print '	ibake downgrade <Backup-ID or Path> <iOS Version> <iOS Build Number>'
+	print
 	print 'Generate file name hash:'
 	print '	ibake hash <Domain-name> <Relative-path>'
 	print
@@ -348,6 +351,53 @@ elif whattodo == 'upload':
 	conn.commit()
 	print 'Done!'	
 	
+elif whattodo == 'downgrade':
+	try:
+		backupId = argv[2]
+		iosVersion = argv[3]
+		iosBuild = argv[3]
+	except:
+		usage()
+		
+	user = os.environ['HOME']
+	if os.path.isdir(backupId):
+		backupDir = backupId
+	else:
+		backupDir = os.path.join(user,'Library/Application Support/MobileSync/Backup/',backupId)
+		
+	mustCopyBeforeOperating = raw_input('This backup will be modified. In case of error, all data it contains will be lost. Copy backup before operating? (y/n)')=='y'
+		
+	if mustCopyBeforeOperating:
+		parent,name = os.path.split(backupDir)
+		print 'Copying backup... (this may take a long time!)'
+		shutil.copytree(backupDir, os.path.join(parent,name+'-BACKUP'))
+		print 'Ending copying...'
+		
+		plistPath = os.path.join(backupDir,'Info.plist')
+		plist = plistlib.readPlist(plistPath)
+		plist['Display Name'] += ' - iBake Backup'
+		plistlib.writePlist(plist, plistPath)
+		
+	print 'Downgrading backup...'
+	
+	manifestPlistPath = os.path.join(backupDir,'Manifest.plist')
+	infoPlistPath = os.path.join(backupDir,'Info.plist')
+	
+	os.system('plutil -convert xml1 "{path}"'.format(path=os.path.realpath(manifestPlistPath)))
+	manifestPlist = plistlib.readPlist(manifestPlistPath)
+	manifestPlist['Lockdown']['ProductVersion'] = iosVersion
+	manifestPlist['Lockdown']['BuildVersion'] = iosBuild
+	plistlib.writePlist(manifestPlist, manifestPlistPath)
+	os.system('plutil -convert binary1 "{path}"'.format(path=os.path.realpath(manifestPlistPath)))
+
+	
+	infoPlist = plistlib.readPlist(infoPlistPath)
+	infoPlist['Product Version'] = iosVersion
+	infoPlist['Build Version'] = iosBuild
+	plistlib.writePlist(infoPlist, infoPlistPath)
+	
+	print 'Backup Downgraded to {version} ({build})'.format(version = iosVersion,build=iosBuild)
+	
 elif whattodo == 'hash':
 	try:
 		domain = argv[2]
@@ -368,6 +418,3 @@ elif whattodo == 'shell':
 		
 else:
 	usage()
-	
-	
-	
