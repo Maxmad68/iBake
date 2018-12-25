@@ -245,17 +245,17 @@ elif whattodo == 'info':
 		plist = plistlib.readPlist(os.path.join(backupDir,'Info.plist'))
 		if not showApps:
 			print 'Backup ID: '+backupId
-			print 'Last Backup Date: '+str(plist['Last Backup Date'])
-			print 'Device Name: '+plist['Device Name']
-			print 'Device Type: %s (%s)'%(plist['Product Name'],plist['Product Type'])
-			print 'Serial Number: '+plist['Serial Number']
-			print 'GUID: '+plist['GUID']
-			print 'ICCID: '+plist['ICCID']
-			print 'IMEI: '+plist['IMEI']
-			print 'UUID: '+plist['Unique Identifier']
-			print 'Target Identifier: '+plist['Target Identifier']
-			print 'iOS Version: %s (%s)' %(plist['Product Version'],plist['Build Version'])
-			print 'iTunes Version: '+plist['iTunes Version']
+			print 'Last Backup Date: '+str(plist.get('Last Backup Date','Unknown'))
+			print 'Device Name: '+plist.get('Device Name','Unknown')
+			print 'Device Type: %s (%s)'%(plist.get('Product Name','Unknown'),plist.get('Product Type','Unknown'))
+			print 'Serial Number: '+plist.get('Serial Number','Unknown')
+			print 'GUID: '+plist.get('GUID','Unknown')
+			print 'ICCID: '+plist.get('ICCID','Unknown')
+			print 'IMEI: '+plist.get('IMEI','Unknown')
+			print 'UUID: '+plist.get('Unique Identifier','Unknown')
+			print 'Target Identifier: '+plist.get('Target Identifier','Unknown')
+			print 'iOS Version: %s (%s)' %(plist.get('Product Version','Unknown'),plist.get('Build Version','Unknown'))
+			print 'iTunes Version: '+plist.get('iTunes Version','Unknown')
 		else:
 			print 'Installed Applications: (%i)'%len(plist['Installed Applications'])
 			print ''.join(map(lambda s: '\n   - '+s,plist['Installed Applications']))
