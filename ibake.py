@@ -58,7 +58,7 @@ def isBackup(backupPath):
 	''' 
 	if os.path.isdir(backupPath):
 		content = os.listdir(backupPath)
-		return 'Info.plist' in content and 'Manifest.db' in content
+		return ('Info.plist' in content and 'Manifest.db' in content) or ('Status.plist' in content and 'Snapshot' in content)
 	return False
 	
 def extract(backupDir,outputDir):
