@@ -20,13 +20,6 @@ Just paste this in a terminal (sudo permissions required!)
     sudo curl -o /usr/local/bin/ibake https://raw.githubusercontent.com/Maxmad68/ibake/master/ibake.py && sudo chmod +x /usr/local/bin/ibake && echo && echo "Successfully installed iBake"
 
 
-# Tutorial
-
-- [Extracting files / Recovering data](./Tutorial/Extracting.md)
-- [Downgrade backup](./Tutorial/Downgrade.md)
-- [Read infos](./Tutorial/Infos.md)
-
-
 # Usage
 
 Extract a backup:</br>
