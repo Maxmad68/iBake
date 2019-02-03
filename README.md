@@ -22,9 +22,9 @@ Just paste this in a terminal (sudo permissions required!)
 
 # Tutorial
 
-[Extracting files / Recovering data](./Tutorial/Extracting.md)
-[Downgrade backup](./Tutorial/Downgrade.md)
-[Read infos](./Tutorial/Infos.md)
+- [Extracting files / Recovering data](./Tutorial/Extracting.md)
+- [Downgrade backup](./Tutorial/Downgrade.md)
+- [Read infos](./Tutorial/Infos.md)
 
 
 # Usage
