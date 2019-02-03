@@ -415,7 +415,7 @@ elif whattodo == 'downgrade': # Make a backup in a version able to be restored o
 	try:
 		backupId = argv[2]
 		iosVersion = argv[3]
-		iosBuild = argv[3]
+		iosBuild = argv[4]
 	except:
 		usage()
 		
