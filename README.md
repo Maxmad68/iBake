@@ -1,10 +1,30 @@
 # iBake
-iBake (<b>i</b>OS <b>BA</b>c<b>K</b>up <b>E</b>xtractor) is an iOS backup extractor and utility.
+iBake (<b>i</b>OS <b>BA</b>c<b>K</b>up <b>E</b>xtractor) is a iPhone (iPad/iPod Touch) backup manipulating tool.
+
+What iBake can do:
+- Manipulate backups
+- Extract files from Backup
+- Recover data from uncomplete backup
+- Downgrade backup to make it restorable on a lower version
+
+What iBake can't do:
+- Backup your iPhone
+- Restore backup on your iPhone
+
+Currently, iBake only works on macOS.
+Windows support will be added... someday?
 
 # Installation
 Just paste this in a terminal (sudo permissions required!)
 
     sudo curl -o /usr/local/bin/ibake https://raw.githubusercontent.com/Maxmad68/ibake/master/ibake.py && sudo chmod +x /usr/local/bin/ibake && echo && echo "Successfully installed iBake"
+
+
+# Tutorial
+
+[Extracting files / Recovering data](./Tutorial/Extracting.md)
+[Downgrade backup](./Tutorial/Downgrade.md)
+[Read infos](./Tutorial/Infos.md)
 
 
 # Usage
