@@ -14,6 +14,14 @@ What iBake can't do:
 Currently, iBake only works on macOS.
 Windows support will be added... someday?
 
+TODO:
+- [ ] Support Windows
+- [ ] Support encrypted backups
+- [ ] Support iCloud Backups
+(I'm currently passing some exams, I promise you I'm gonna continue developping iBake as soon as possible.) 
+
+
+
 # Installation
 Just paste this in a terminal (sudo permissions required!)
 
