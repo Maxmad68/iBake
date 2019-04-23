@@ -17,7 +17,7 @@ Windows support will be added... someday?
 TODO:
 - [ ] Support Windows
 - [ ] Support encrypted backups
-- [ ] Support iCloud Backups
+- [ ] Support iCloud Backups<br>
 (I'm currently passing some exams, I promise you I'm gonna continue developping iBake as soon as possible.) 
 
 
