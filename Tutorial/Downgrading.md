@@ -34,11 +34,14 @@ To get the build number of an iOS version, you can use the website [ipsw.me](htt
 
 iOS Version | Build Number
 ------------ | -------------
-12.1.3 | 16D39
-12.1.2 (Rev 2) | 16C104
-12.1.2 (Rev 1) | 16C101
-12.1.1 | 16C50
-12.1 | 16B92
+13.0 b1 | 17A5492t
+13.0 b2 | 17A5508m
+13.0 b3 | 17A5522f
+13.0 b4 | 17A5534f
+13.0 b5 | 17A5547d<br>
+12.4 | 16G77
+12.3.1 | 16F203
+
 
 <br>
 Then, use the command to downgrade the backup:
