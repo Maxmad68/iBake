@@ -29,19 +29,7 @@ Then, confirm that this identifier is really corresponding to the backup you wan
 After that, you need to know the "destination" iOS version (the one you want to make your backup restorable to, easy), and it's <u>build number</u>.<br>
 To get the build number of an iOS version, you can use the website [ipsw.me](https://ipsw.me). After choosing your device, the site will give you all iOS versions available for your device, and their build numbers between parenthesis.<br>
 ![Error](https://github.com/Maxmad68/iBake/blob/master/Tutorial/Images/ipswme.png)<br>
-<br><br>
-<u>Latest iOS versions:</u>
-
-iOS Version | Build Number
------------- | -------------
-13.0 b1 | 17A5492t
-13.0 b2 | 17A5508m
-13.0 b3 | 17A5522f
-13.0 b4 | 17A5534f
-13.0 b5 | 17A5547d<br>
-12.4 | 16G77
-12.3.1 | 16F203
-
+<br>
 
 <br>
 Then, use the command to downgrade the backup:
