@@ -8,13 +8,19 @@ import plistlib
 import re
 import hashlib
 
+import urllib.request
+import json
+import zipfile
+
+import warnings
+warnings.filterwarnings("ignore")
 
 argv = sys.argv
 
-#  Copyright 2018 Maxime MADRAU
+#  Copyright 2019 Maxime MADRAU
 
 __author__ = 'Maxime Madrau (maxime@madrau.com)'
-__version__ = '1.6'
+__version__ = '1.7'
 
 def read_binary_plist(path):
 	'''
@@ -47,6 +53,23 @@ def makeHash(domain,path):
 	backupPath = '%s-%s'%(domain,path)
 	hash_ = hashlib.sha1(backupPath).hexdigest()
 	return hash_
+	
+def findBuildNumbers(version, deviceId):
+	data = urllib.request.urlopen('https://api.ipsw.me/v4/ipsw/{}'.format(version)).read()
+	ipsws = json.loads(data)
+	for firmware in ipsws:
+		if firmware['identifier'] == deviceId:
+			yield firmware['buildid']
+		
+		
+def findIOSForIPSW(ipswFile):
+	ipswZip = zipfile.ZipFile(ipswFile)
+	buildManifestFile = ipswZip.open('BuildManifest.plist')
+	buildManifest = plistlib.load(buildManifestFile)
+	iOSVersion = buildManifest['ProductVersion']
+	buildNumber = buildManifest['ProductBuildVersion']
+	devices = buildManifest['SupportedProductTypes']
+	return (iOSVersion, buildNumber, devices)
 	
 def isBackup(backupPath):
 	'''
@@ -86,12 +109,12 @@ def extract(backupDir,outputDir):
 					res = c.execute('''SELECT * FROM Files WHERE flags IS 1 AND fileID IS "%s"'''%(hash_)).fetchone() # Get id, domain name, file name, flag, content (maybe) of file with hash
 					id_,domain,file,flag,f = res # same
 					subDir = id_[:2] # Get two first letters of the has to know the directory the file is in
-					print 'Extracting file...'
+					print ('Extracting file...')
 					shutil.copy(os.path.join(path,subDir,id_),outputDir) # Copy the file
-					print 'Done!'
+					print ('Done!')
 				except Exception as e: 
-					print 'Error!'
-					print e
+					print ('Error!')
+					print (e)
 				exit()
 		
 		if len(argv) >= 7: # If parameters -d and -f are specified (just that case for the moment)
@@ -105,18 +128,18 @@ def extract(backupDir,outputDir):
 						res = c.execute('''SELECT * FROM Files WHERE flags IS 1 AND domain IS "%s" AND relativePath IS "%s"'''%(domain,file_)).fetchone() # Get file properties
 						id_,domain,file,flag,f = res
 						subDir = id_[:2] # Get two first letters of the has to know the directory the file is in
-						print 'Extracting file...'
+						print ('Extracting file...')
 						shutil.copy(os.path.join(path,subDir,id_),outputDir) # Copy the file
-						print 'Done!'
+						print ('Done!')
 					except Exception as e:
-						print 'Error!'
-						print e
+						print ('Error!')
+						print (e)
 					exit()
 	else:
 		# All backup extraction
 		allDir = c.execute('''SELECT * FROM Files WHERE flags IS 2''').fetchall() # Retrieve all sub-directories infos
 		
-	print 'Building Sub-directories'
+	print ('Building Sub-directories')
 	
 	for id_,domain,file,flag,f in allDir:
 		# Mkdirs to create sub-sirectories
@@ -125,8 +148,8 @@ def extract(backupDir,outputDir):
 		if not os.path.isdir(os.path.join(outputDir,domain,file)):
 			os.makedirs(os.path.join(outputDir,domain,file))
 
-	print 'Subdirectories built!'
-	print
+	print ('Subdirectories built!')
+	print()
 	
 	# Retrieve every file infos
 	if len(argv) >= 5:
@@ -144,14 +167,14 @@ def extract(backupDir,outputDir):
 	current = 0 # Set to 0 (for counter)
 	error = 0 # Set to 0 (to count errors)
 
-	print 'Building Files'
-	print
+	print ('Building Files')
+	print ()
 	
 	for id_,domain,file,flag,f in allFiles:
 		current += 1 # For counter
 		sys.stdout.write("\033[F") # Erase last line
 		sys.stdout.write("\033[K") # same
-		print 'File %i on %i (%0.2f%%)'%(current,total,(current/total)*100) # Counter
+		print ('File %i on %i (%0.2f%%)'%(current,total,(current/total)*100)) # Counter
 
 		
 		if flag == 1:
@@ -161,13 +184,13 @@ def extract(backupDir,outputDir):
 			try:
 				shutil.copy(os.path.join(path,subDir,id_),os.path.join(outputDir,domain,file)) # Copy file
 			except Exception as e:
-				print 'Error:',e
+				print ('Error:',e)
 				error += 1
-				print
-				print 
+				print ()
+				print ()
 		
-	print 'Files build!'
-	print 'Backup extraction proceed (with %i error%s)'%(error,'s' if error>1 else '')
+	print ('Files build!')
+	print ('Backup extraction proceed (with %i error%s)'%(error,'s' if error>1 else ''))
 	
 def listBackups(oath):
 	for backupId in os.listdir(path): 
@@ -175,7 +198,7 @@ def listBackups(oath):
 			if backupId[0] != '.':
 					
 				if 'Snapshot' in os.listdir(os.path.join(path,backupId)):
-					print '%s: Backuping'%backupId
+					print ('%s: Backuping'%backupId)
 					continue 
 					
 				try:
@@ -185,9 +208,9 @@ def listBackups(oath):
 					date = plist['Last Backup Date']
 				except:
 						
-					print '%s: Unreadable backup'%backupId
+					print ('%s: Unreadable backup'%backupId)
 				else:
-					print '%s: %s - iOS %s , on %s'%(backupId,deviceName,osVersion,date)
+					print ('%s: %s - iOS %s , on %s'%(backupId,deviceName,osVersion,date))
 		
 
 def backupInfo(backupDir):
@@ -196,34 +219,34 @@ def backupInfo(backupDir):
 		showApps = '-a' in argv # Is -a (show apps) parameter specified?
 		plist = plistlib.readPlist(os.path.join(backupDir,'Info.plist')) # Main backup information property list
 		if not showApps: # If mustn't show apps infos
-			print 'Backup ID: '+backupId
-			print 'Last Backup Date: '+str(plist.get('Last Backup Date','Unknown'))
-			print 'Device Name: '+plist.get('Device Name','Unknown')
-			print 'Device Type: %s (%s)'%(plist.get('Product Name','Unknown'),plist.get('Product Type','Unknown'))
-			print 'Serial Number: '+plist.get('Serial Number','Unknown')
-			print 'GUID: '+plist.get('GUID','Unknown')
-			print 'ICCID: '+plist.get('ICCID','Unknown')
-			print 'IMEI: '+plist.get('IMEI','Unknown')
-			print 'UUID: '+plist.get('Unique Identifier','Unknown')
-			print 'Target Identifier: '+plist.get('Target Identifier','Unknown')
-			print 'iOS Version: %s (%s)' %(plist.get('Product Version','Unknown'),plist.get('Build Version','Unknown'))
-			print 'iTunes Version: '+plist.get('iTunes Version','Unknown')
+			print ('Backup ID: '+backupId)
+			print ('Last Backup Date: '+str(plist.get('Last Backup Date','Unknown')))
+			print ('Device Name: '+plist.get('Device Name','Unknown'))
+			print ('Device Type: %s (%s)'%(plist.get('Product Name','Unknown'),plist.get('Product Type','Unknown')))
+			print ('Serial Number: '+plist.get('Serial Number','Unknown'))
+			print ('GUID: '+plist.get('GUID','Unknown'))
+			print ('ICCID: '+plist.get('ICCID','Unknown'))
+			print ('IMEI: '+plist.get('IMEI','Unknown'))
+			print ('UUID: '+plist.get('Unique Identifier','Unknown'))
+			print ('Target Identifier: '+plist.get('Target Identifier','Unknown'))
+			print ('iOS Version: %s (%s)' %(plist.get('Product Version','Unknown'),plist.get('Build Version','Unknown')))
+			print ('iTunes Version: '+plist.get('iTunes Version','Unknown'))
 		else: # If must show apps infos
-			print 'Installed Applications: (%i)'%len(plist['Installed Applications'])
-			print ''.join(map(lambda s: '\n   - '+s,plist['Installed Applications']))
+			print ('Installed Applications: (%i)'%len(plist['Installed Applications']))
+			print (''.join(map(lambda s: '\n   - '+s,plist['Installed Applications'])))
 	
 	else: # If backup is in progress: Show every information we can
 		try:
 			plistPath = os.path.join(backupDir,'Status.plist') # Backup information file while backuping (bin plist)
 			plist = read_binary_plist(plistPath) # Parse bin plist
-			print 'Backup ID: '+backupId
-			print 'UUID: '+plist['UUID']
-			print 'Date: '+re.findall(r'.+(?= \+)',plist['Date'])[0]
-			print 'Backup State: '+plist['BackupState']
-			print 'Snapshot State: '+plist['SnapshotState']
+			print ('Backup ID: '+backupId)
+			print ('UUID: '+plist['UUID'])
+			print ('Date: '+re.findall(r'.+(?= \+)',plist['Date'])[0])
+			print ('Backup State: '+plist['BackupState'])
+			print ('Snapshot State: '+plist['SnapshotState'])
 		except: # Error probably on the read_binary_plist
-			print 'Backup ID: '+backupId
-			print 'Backuping, can\'t get any information.'
+			print ('Backup ID: '+backupId)
+			print ('Backuping, can\'t get any information.')
 			
 def readBackup(path):
 	dbPath = os.path.join(path,'Manifest.db')
@@ -232,7 +255,7 @@ def readBackup(path):
 	
 	if readKey == 'domains': # List all domains in backup
 		allDir = c.execute('''SELECT DISTINCT domain FROM Files''').fetchall()
-		print '\n'.join(filter(lambda x:isinstance(x,basestring),map(lambda x:x[0],allDir)))
+		print ('\n'.join(filter(lambda x:isinstance(x,basestring),map(lambda x:x[0],allDir))))
 		
 	if readKey == 'files': # List all files in backup (maybe in specified domain)
 		if len(argv) >= 5: # If an additionnal parameter is specified
@@ -245,7 +268,7 @@ def readBackup(path):
 					files = c.execute('''SELECT fileID,relativePath,domain from Files WHERE domain IS "%s" AND flags IS 1'''%domain).fetchall() # List files just in specified domain
 		else:
 			files = c.execute('''SELECT fileID,relativePath,domain from Files WHERE flags IS 1''').fetchall() # List files in all backup
-		print ''.join(map(lambda s: '[%s]  %s : %s\n'%(s[2],s[0],s[1]),files))
+		print (''.join(map(lambda s: '[%s]  %s : %s\n'%(s[2],s[0],s[1]),files)))
 
 
 def uploadFileToBackup(backupId,localFile,domain,relativePath):
@@ -256,12 +279,12 @@ def uploadFileToBackup(backupId,localFile,domain,relativePath):
 	domainExists = bool(c.execute('''SELECT count(*) FROM Files WHERE domain IS "%s"'''%domain).fetchone()[0]) # Check if specified domain exists
 
 	if not domainExists: # If domain doesn't exist, ask if we need to upload anyway
-		print 'Domain "%s" doesn\' exist in that backup. Upload anyway? (y/n)'%domain
-		uploadAnyway = raw_input()
+		print ('Domain "%s" doesn\' exist in that backup. Upload anyway? (y/n)'%domain)
+		uploadAnyway = input()
 		if uploadAnyway != 'y':
 			exit()
 			
-	print 'Building parent directories hashes...'
+	print ('Building parent directories hashes...')
 
 	all = []
 	for parentDir in os.path.split(relativePath)[0].split('/'): # Get every "levels" of the relative path (level1/level2/level3/file)
@@ -273,56 +296,57 @@ def uploadFileToBackup(backupId,localFile,domain,relativePath):
 			c.execute('''INSERT INTO Files (fileID,domain,relativePath,flags,file) VALUES ("%s","%s","%s",2,NULL)'''%(id_,domain,parentDirPath))
 		
 			
-	print 'Hashing file id...'
+	print ('Hashing file id...')
 	id_ = makeHash(domain,relativePath)
-	print 'File id is '+id_
+	print ('File id is '+id_)
 
-	print 'Copying file...'
+	print ('Copying file...')
 	subDir = id_[:2] # Get directory name
 	shutil.copyfile(localFile, os.path.join(path,subDir,id_)) # Copy file to backup
 
-	print 'Updating database...'
+	print ('Updating database...')
 	c.execute('''INSERT INTO Files (fileID,domain,relativePath,flags,file) VALUES ("%s","%s","%s",1,NULL)'''%(id_,domain,relativePath)) # Add the file in the database
 	conn.commit() # Save every changes in the database
-	print 'Done!'	
+	print ('Done!'	)
 
 def usage():
 	'''
-	Show man
+	Show man (not to mistake with Snowman, this is not the same thing.)
 	'''
-	print
-	print 'iBake {version}, by Maxime Madrau'.format(version=__version__)
-	print 'Usage:'
-	print
-	print 'Extract a backup:'
-	print '	ibake extract <Backup-ID or Path> <Extraction-Path>'
-	print '	ibake extract <Backup-ID or Path> <Extraction-Path> -d <domain>'
-	print '	ibake extract <Backup-ID or Path> <Extraction-Path> -d <domain> -f <file>'
-	print '	ibake extract <Backup-ID or Path> <Extraction-Path> -h <hash>'
-	print
-	print 'List all backups:'
-	print '	ibake list'
-	print '	ibake list <Directory>'
-	print
-	print 'Print information about a backup:'
-	print '	ibake info <Backup-ID or Path> [-a]'
-	print
-	print 'Read backup:'
-	print '	ibake read <Backup-ID or Path> domains'
-	print '	ibake read <Backup-ID or Path> files'
-	print '	ibake read <Backup-ID or Path> files -d <domain>'
-	print
-	print 'Upload file to backup:'
-	print '	ibake upload <Backup-ID or Path> <Local-file> <Domain-name> <Backup-path>'
-	print
-	print 'Downgrade backup:'
-	print '	ibake downgrade <Backup-ID or Path> <iOS Version> <iOS Build Number>'
-	print
-	print 'Generate file name hash:'
-	print '	ibake hash <Domain-name> <Relative-path>'
-	print
-	print 'Execute shell in backups directory:'
-	print '	ibake shell <Shell>'
+	print ()
+	print ('iBake {version}, by Maxime Madrau'.format(version=__version__))
+	print ('Usage:')
+	print ()
+	print ('Extract a backup:')
+	print ('	ibake extract <Backup-ID or Path> <Extraction-Path>')
+	print ('	ibake extract <Backup-ID or Path> <Extraction-Path> -d <domain>')
+	print ('	ibake extract <Backup-ID or Path> <Extraction-Path> -d <domain> -f <file>')
+	print ('	ibake extract <Backup-ID or Path> <Extraction-Path> -h <hash>')
+	print ()
+	print ('List all backups:')
+	print ('	ibake list')
+	print ('	ibake list <Directory>')
+	print ()
+	print ('Print information about a backup:')
+	print ('	ibake info <Backup-ID or Path> [-a]')
+	print ()
+	print ('Read backup:')
+	print ('	ibake read <Backup-ID or Path> domains')
+	print ('	ibake read <Backup-ID or Path> files')
+	print ('	ibake read <Backup-ID or Path> files -d <domain>')
+	print ()
+	print ('Upload file to backup:')
+	print ('	ibake upload <Backup-ID or Path> <Local-file> <Domain-name> <Backup-path>')
+	print ()
+	print ('Downgrade backup:')
+	print ('	ibake downgrade <Backup-ID or Path> <iOS Version> <iOS Build Number>')
+	print ('	ibake downgrade <Backup-ID or Path> <IPSW File>')
+	print ()
+	print ('Generate file name hash:')
+	print ('	ibake hash <Domain-name> <Relative-path>')
+	print ()
+	print ('Execute shell in backups directory:')
+	print ('	ibake shell <Shell>')
 
 	exit()
 
@@ -341,7 +365,7 @@ if whattodo == 'extract': # Extract backup content
 	
 		
 	if os.path.isdir(outputDir): # Output path specified already exists:
-		print 'Extraction Directory must not exist! (Will be created by iBake)'
+		print ('Extraction Directory must not exist! (Will be created by iBake)')
 		exit()
 		
 	user = os.environ['HOME']
@@ -361,7 +385,7 @@ elif whattodo == 'list': # List all backups
 		path = sys.argv[2]
 	else:
 		path = os.path.join(user,'Library/Application Support/MobileSync/Backup/')
-	print 'All backups:'
+	print ('All backups:')
 	
 	listBackups(path)
 	
@@ -414,8 +438,17 @@ elif whattodo == 'upload': # Upload a file to a backup
 elif whattodo == 'downgrade': # Make a backup in a version able to be restored on a device with a previous version
 	try:
 		backupId = argv[2]
-		iosVersion = argv[3]
-		iosBuild = argv[4]
+		if '.ipsw' in argv[3]:
+			ipsw = True
+			iosVersion, iosBuild, devices = findIOSForIPSW(argv[3])
+			print ("iOS Version: "+ iosVersion)
+			print ("Build Number: "+ iosBuild)
+			force = len(argv) == 5 and argv[4] == '-f'
+		else:
+			ipsw = False
+			iosVersion = argv[3]
+			iosBuild = argv[4]
+			force = len(argv) == 6 and argv[5] == '-f'
 	except:
 		usage()
 		
@@ -423,32 +456,50 @@ elif whattodo == 'downgrade': # Make a backup in a version able to be restored o
 	if os.path.isdir(backupId):
 		backupDir = backupId
 	else:
-		backupDir = os.path.join(user,'Library/Application Support/MobileSync/Backup/',backupId)
+		backupDir = os.path.join(user,'Library/Application Support/MobileSync/Backup/',backupId)	
 		
-	mustCopyBeforeOperating = raw_input('This backup will be modified. In case of error, all data it contains will be lost. Copy backup before operating? (y/n)')=='y'
-		
-	if mustCopyBeforeOperating:
-		parent,name = os.path.split(backupDir)
-		print 'Copying backup... (this may take a long time!)'
-		shutil.copytree(backupDir, os.path.join(parent,name+'-BACKUP'))
-		print 'Ending copying...'
-		
-		plistPath = os.path.join(backupDir,'Info.plist')
-		plist = plistlib.readPlist(plistPath)
-		plist['Display Name'] += ' - iBake Backup'
-		plistlib.writePlist(plist, plistPath)
-		
-	print 'Downgrading backup...'
-	
 	manifestPlistPath = os.path.join(backupDir,'Manifest.plist')
 	infoPlistPath = os.path.join(backupDir,'Info.plist')
+	infoPlist = plistlib.readPlist(infoPlistPath)
 	
-	os.system('plutil -convert xml1 "{path}"'.format(path=os.path.realpath(manifestPlistPath)))
+	if not force:
+		deviceId = infoPlist["Product Type"]
+		print ("Checking build number")
+		buildNumbers = list(findBuildNumbers(iosVersion, deviceId))	
+
+		if iosBuild in buildNumbers:
+			print ("Build number matching!")
+		else:
+			print ("Build number and iOS version don't match. Build numbers for this version and device are:")
+			print (' - ' + '\n - '.join(buildNumbers))
+			print ("You can use -f option to force downgrading with this ")
+			exit()
+	
+	
+	mustCopyBeforeOperating = input('This backup will be modified. In case of error, all the data it contains will be lost. Copy backup before operating? (y/n)')=='y'
+	
+	if mustCopyBeforeOperating:
+		parent,name = os.path.split(backupDir)
+		print ('Copying backup... (this may take a long time!)')
+		shutil.copytree(backupDir, os.path.join(parent,name+'-BACKUP'))
+		print ('Ending copying...')
+		
+		infoPlistPathBkp = os.path.join(parent, name + '-BACKUP', 'Info.plist')
+		infoPlistBkp = plistlib.readPlist(infoPlistPathBkp)
+		infoPlistBkp['Display Name'] += ' - iBake Backup'
+		plistlib.writePlist(infoPlistBkp, infoPlistPathBkp)
+		
+	print ('Downgrading backup...')
+	
+
+
+	
+	os.system('plutil -convert xml1 "{path}"'.format(path=os.path.realpath(manifestPlistPath))) # TODO : Use Google Binplist lib
 	manifestPlist = plistlib.readPlist(manifestPlistPath)
 	manifestPlist['Lockdown']['ProductVersion'] = iosVersion
 	manifestPlist['Lockdown']['BuildVersion'] = iosBuild
 	plistlib.writePlist(manifestPlist, manifestPlistPath)
-	os.system('plutil -convert binary1 "{path}"'.format(path=os.path.realpath(manifestPlistPath)))
+	os.system('plutil -convert binary1 "{path}"'.format(path=os.path.realpath(manifestPlistPath))) # TODO : Binplist
 
 	
 	infoPlist = plistlib.readPlist(infoPlistPath)
@@ -456,7 +507,7 @@ elif whattodo == 'downgrade': # Make a backup in a version able to be restored o
 	infoPlist['Build Version'] = iosBuild
 	plistlib.writePlist(infoPlist, infoPlistPath)
 	
-	print 'Backup Downgraded to {version} ({build})'.format(version = iosVersion,build=iosBuild)
+	print ('Backup Downgraded to {version} ({build})'.format(version = iosVersion,build=iosBuild))
 	
 elif whattodo == 'hash': # Make a hash
 	try:
@@ -466,7 +517,7 @@ elif whattodo == 'hash': # Make a hash
 		usage()
 		
 	id_ = makeHash(domain, file_)
-	print id_
+	print (id_)
 	
 elif whattodo == 'shell': # Just execute a shell in a backup dir
 	command = ' '.join(argv[2:]) # Reform the command from the sys.argv
@@ -477,6 +528,4 @@ elif whattodo == 'shell': # Just execute a shell in a backup dir
 		
 else:
 	usage()
-	
-	
 	
