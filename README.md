@@ -69,7 +69,9 @@ Please read [this page](../master/Tutorial/Downgrading.md)
 
 
 
-    ibake downgrade <Backup-ID> <iOS-Version> <iOS-Build-Number>
+    ibake downgrade <Backup-ID> <iOS-Version> <iOS-Build-Number> [-f]
+    ibake downgrade <Backup-ID> <IPSW File> [-f]
+
 
 <br>
 Generate file name hash:<br>
