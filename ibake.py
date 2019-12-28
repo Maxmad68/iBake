@@ -255,7 +255,7 @@ def readBackup(path):
 	
 	if readKey == 'domains': # List all domains in backup
 		allDir = c.execute('''SELECT DISTINCT domain FROM Files''').fetchall()
-		print ('\n'.join(filter(lambda x:isinstance(x,basestring),map(lambda x:x[0],allDir))))
+		print ('\n'.join(filter(lambda x:isinstance(x,str),map(lambda x:x[0],allDir))))
 		
 	if readKey == 'files': # List all files in backup (maybe in specified domain)
 		if len(argv) >= 5: # If an additionnal parameter is specified
