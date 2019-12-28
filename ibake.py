@@ -50,7 +50,7 @@ def makeHash(domain,path):
 		domain (String) : Domain name
 		path (String) : Relative path
 	'''
-	backupPath = '%s-%s'%(domain,path)
+	backupPath = ('%s-%s'%(domain,path)).encode('utf-8')
 	hash_ = hashlib.sha1(backupPath).hexdigest()
 	return hash_
 	
