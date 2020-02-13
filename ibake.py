@@ -8,7 +8,10 @@ import plistlib
 import re
 import hashlib
 
-import urllib.request
+if sys.version_info >= (3,0):
+	import urllib.request as urllib
+else:
+	import urllib
 import json
 import zipfile
 
@@ -17,10 +20,10 @@ warnings.filterwarnings("ignore")
 
 argv = sys.argv
 
-#  Copyright 2019 Maxime MADRAU
+#  Copyright 2020 Maxime MADRAU
 
 __author__ = 'Maxime Madrau (maxime@madrau.com)'
-__version__ = '1.7'
+__version__ = '1.7.2'
 
 def read_binary_plist(path):
 	'''
@@ -55,7 +58,7 @@ def makeHash(domain,path):
 	return hash_
 	
 def findBuildNumbers(version, deviceId):
-	data = urllib.request.urlopen('https://api.ipsw.me/v4/ipsw/{}'.format(version)).read()
+	data = urllib.urlopen('https://api.ipsw.me/v4/ipsw/{}'.format(version)).read()
 	ipsws = json.loads(data)
 	for firmware in ipsws:
 		if firmware['identifier'] == deviceId:
@@ -168,7 +171,7 @@ def extract(backupDir,outputDir):
 	error = 0 # Set to 0 (to count errors)
 
 	print ('Building Files')
-	print ()
+	print ("")
 	
 	for id_,domain,file,flag,f in allFiles:
 		current += 1 # For counter
@@ -186,8 +189,8 @@ def extract(backupDir,outputDir):
 			except Exception as e:
 				print ('Error:',e)
 				error += 1
-				print ()
-				print ()
+				print ("")
+				print ("")
 		
 	print ('Files build!')
 	print ('Backup extraction proceed (with %i error%s)'%(error,'s' if error>1 else ''))
@@ -313,38 +316,38 @@ def usage():
 	'''
 	Show man (not to mistake with Snowman, this is not the same thing.)
 	'''
-	print ()
+	print ("")
 	print ('iBake {version}, by Maxime Madrau'.format(version=__version__))
 	print ('Usage:')
-	print ()
+	print ("")
 	print ('Extract a backup:')
 	print ('	ibake extract <Backup-ID or Path> <Extraction-Path>')
 	print ('	ibake extract <Backup-ID or Path> <Extraction-Path> -d <domain>')
 	print ('	ibake extract <Backup-ID or Path> <Extraction-Path> -d <domain> -f <file>')
 	print ('	ibake extract <Backup-ID or Path> <Extraction-Path> -h <hash>')
-	print ()
+	print ("")
 	print ('List all backups:')
 	print ('	ibake list')
 	print ('	ibake list <Directory>')
-	print ()
+	print ("")
 	print ('Print information about a backup:')
 	print ('	ibake info <Backup-ID or Path> [-a]')
-	print ()
+	print ("")
 	print ('Read backup:')
 	print ('	ibake read <Backup-ID or Path> domains')
 	print ('	ibake read <Backup-ID or Path> files')
 	print ('	ibake read <Backup-ID or Path> files -d <domain>')
-	print ()
+	print ("")
 	print ('Upload file to backup:')
 	print ('	ibake upload <Backup-ID or Path> <Local-file> <Domain-name> <Backup-path>')
-	print ()
+	print ("")
 	print ('Downgrade backup:')
 	print ('	ibake downgrade <Backup-ID or Path> <iOS Version> <iOS Build Number>')
 	print ('	ibake downgrade <Backup-ID or Path> <IPSW File>')
-	print ()
+	print ("")
 	print ('Generate file name hash:')
 	print ('	ibake hash <Domain-name> <Relative-path>')
-	print ()
+	print ("")
 	print ('Execute shell in backups directory:')
 	print ('	ibake shell <Shell>')
 
