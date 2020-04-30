@@ -28,9 +28,10 @@ Then, confirm that this identifier is really corresponding to the backup you wan
 
 After that, you need to know the "destination" iOS version (the one you want to make your backup restorable to, easy), and it's <u>build number</u>.<br>
 To get the build number of an iOS version, you can use the website [ipsw.me](https://ipsw.me). After choosing your device, the site will give you all iOS versions available for your device, and their build numbers between parenthesis.<br>
+Example: On this image, we can see Build Number for iOS 12.1.3 is 16D40<br>
 ![Error](https://github.com/Maxmad68/iBake/blob/master/Tutorial/Images/ipswme.png)<br>
 <br>
-
+Note: on the latest versions of iBake, iBake will verify the build number and iOS version are matching with the device type, so you couldn't do any mistake. However, you can override this verification by specifiing -f argument.
 <br>
 Then, use the command to downgrade the backup:
 
@@ -39,6 +40,11 @@ Then, use the command to downgrade the backup:
 
 
 Because after downgrading the backup, some files may not be restored to the device (see below), iBake will ask you to be sure you have a working copy of the backup before processing.<br>
+
+<br>
+An other solution, for example if you have downgraded all your iOS device from an IPSW file, you can use iBake to downgrade your backup using the IPSW file to get the destination version informations. By using that method, you would need to provide iBake the path of the IPSW file, but you won't have to search for build numbers and version number.
+
+    ibake downgrade <Backup-ID> <IPSW File>
 
 
 ## Be careful!
