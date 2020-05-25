@@ -25,6 +25,11 @@ argv = sys.argv
 __author__ = 'Maxime Madrau (maxime@madrau.com)'
 __version__ = '1.7.2'
 
+
+if sys.version_info.major == 2:
+	input = raw_input
+
+
 def read_binary_plist(path):
 	'''
 	Parse a binary plist file
@@ -68,7 +73,10 @@ def findBuildNumbers(version, deviceId):
 def findIOSForIPSW(ipswFile):
 	ipswZip = zipfile.ZipFile(ipswFile)
 	buildManifestFile = ipswZip.open('BuildManifest.plist')
-	buildManifest = plistlib.load(buildManifestFile)
+	if sys.version_info.major >= 3:
+		buildManifest = plistlib.load(buildManifestFile)
+	else:
+		buildManifest = plistlib.readPlist(buildManifestFile)
 	iOSVersion = buildManifest['ProductVersion']
 	buildNumber = buildManifest['ProductBuildVersion']
 	devices = buildManifest['SupportedProductTypes']
@@ -439,7 +447,8 @@ elif whattodo == 'upload': # Upload a file to a backup
 	uploadFileToBackup(backupId,localFile,domain,file_)
 	
 elif whattodo == 'downgrade': # Make a backup in a version able to be restored on a device with a previous version
-	try:
+	#try:
+	if True:
 		backupId = argv[2]
 		if '.ipsw' in argv[3]:
 			ipsw = True
@@ -452,8 +461,8 @@ elif whattodo == 'downgrade': # Make a backup in a version able to be restored o
 			iosVersion = argv[3]
 			iosBuild = argv[4]
 			force = len(argv) == 6 and argv[5] == '-f'
-	except:
-		usage()
+	#except:
+	#	usage()
 		
 	user = os.environ['HOME']
 	if os.path.isdir(backupId):
