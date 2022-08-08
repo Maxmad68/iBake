@@ -62,7 +62,7 @@ Upload file to backup:<br>
     
 <br>
 Downgrade backup:<br>
-This command allows you to make a backup compatible with a device on an older version. (For exemple, an iOS 12 backup could be restored on an iOS 11 device)
+This command allows you to make a backup compatible with a device on an older version. (For exemple, an iOS 16 backup could be restored on an iOS 15 device)
 Note that some backuped items may not be compatible with the "destination" version. Please make sure to have a working copy of your backup before using this command.<br>The iOS-Version parameter and the iOS-Build-Number must correspond.
 
 Please read [this page](../master/Tutorial/Downgrading.md)
@@ -72,6 +72,8 @@ Please read [this page](../master/Tutorial/Downgrading.md)
     ibake downgrade <Backup-ID> <iOS-Version> <iOS-Build-Number> [-f]
     ibake downgrade <Backup-ID> <IPSW File> [-f]
 
+
+Downgrade from iOS 16 to iOS 15: Tested
 
 <br>
 Generate file name hash:<br>
